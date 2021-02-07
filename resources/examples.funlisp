@@ -1,0 +1,14 @@
+(def pi 3.14159)
+
+(def e 2.71828)
+
+(def defmacro
+  (macro (name args exp)
+         (QQT (def (UQT (QT name))
+                (macro (UQT (QT args))
+                       (UQT (QT exp)))))))
+
+(defmacro defn (name args exp)
+    (QQT (def (UQT (QT name))
+           (lambda (UQT (QT args))
+                   (UQT (QT exp))))))

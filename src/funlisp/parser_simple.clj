@@ -45,6 +45,10 @@
     ; parentheses conversion to symbols:
     (= token "(") '-LEFT-
     (= token ")") '-RIGHT-
+    ; booleans & nil:
+    (= token "true") true
+    (= token "false") false
+    (= token "nil") nil
     :else ; everything else is converted into a symbol:
     (symbol token)))
 
