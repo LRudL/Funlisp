@@ -42,7 +42,7 @@
                    (verbose-slurp "resources/examples.funlisp"))]
     ;(println "Read code:")
     ;(println init-code)
-    ;(println "Funlisp REPL (read-eval-print loop):")
+    (println "READY. Funlisp REPL; type expressions and press enter to evaluate:")
     (repl read-line
           (fn [out] (println " >" out))
           parser/parse
