@@ -9,6 +9,9 @@
                        (UQT (QT exp)))))))
 
 (defmacro defn (name args exp)
-    (QQT (def (UQT (QT name))
-           (lambda (UQT (QT args))
-                   (UQT (QT exp))))))
+  (QQT (def (UQT (QT name))
+         (lambda (UQT (QT args))
+                 (UQT (QT exp))))))
+
+(defn list (& args)
+  args)
