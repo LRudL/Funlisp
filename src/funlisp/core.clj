@@ -95,7 +95,7 @@
     (repl read-line
           (fn [out] (println " >" (prettify out)))
           parser/parse
-          rlisp-eval-dualstack/eval-exp-list ; <- change eval function here!
+          rlisp-eval-stack/eval-exp-list ; <- change eval function here!
           {})))
           ;(second ; <- extract environment
           ; (rlisp-eval1/eval-exp-list init-code {})))))
