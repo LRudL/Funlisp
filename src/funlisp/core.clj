@@ -8,6 +8,7 @@
             [funlisp.redlisp-compilation.eval-dfstep :as rlisp-eval-dfstep]
             [funlisp.redlisp-compilation.eval-dualstack :as rlisp-eval-dualstack]
             [funlisp.redlisp-compilation.eval-stack :as rlisp-eval-stack]
+            [funlisp.redlisp-compilation.eval-stackcp :as rlisp-eval-stackcp]
             [funlisp.parser-simple :as parser]
             [clojure.string :as string]))
 
@@ -95,7 +96,7 @@
     (repl read-line
           (fn [out] (println " >" (prettify out)))
           parser/parse
-          rlisp-eval-stack/eval-exp-list ; <- change eval function here!
+          rlisp-eval-stackcp/eval-exp-list ; <- change eval function here!
           {})))
           ;(second ; <- extract environment
           ; (rlisp-eval1/eval-exp-list init-code {})))))
