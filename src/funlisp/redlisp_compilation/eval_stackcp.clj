@@ -98,18 +98,18 @@
           label-after (get-label)]
       [(concatv fdefs1 fdefs2 fdefs3)
        (concatv code-predicate
-               [[:TEST label-alt]]
-               (code-consequent)
-               [[:GOTO label-after]
-                [:LABEL label-alt]]
-               (code-alternate)
-               [[:LABEL label-after]])])
+                [[:TEST label-alt]]
+                code-consequent
+                [[:GOTO label-after]
+                 [:LABEL label-alt]]
+                code-alternate
+                [[:LABEL label-after]])])
     ; def:
     (starts-with? e 'def)
     (let [[fdefs vcode] (precompile (third e))]
       [fdefs
        (concatv vcode
-               [[:DEFINE (second e)]])])
+                [[:DEFINE (second e)]])])
     ; +:
     (starts-with? e '+)
     (let [[fdefs1 c1] (precompile (second e))
@@ -143,9 +143,11 @@
     (let [label (get-label)
           [fdefs ce] (precompile (first (rest (rest e))))]
       [(concatv fdefs
-               [[:LABEL label]]
-               ce
-               [[:RETURN]])
+                [[:LABEL label]]
+                ce
+                [[:SWAP]
+                 [:POP] ; pop function environment off stack
+                 [:RETURN]])
        [[:MAKE-LAMBDA
          label ; location of code
          (second e)]]]) ; arguments
@@ -156,12 +158,10 @@
           arg-fdefs (apply concatv (map first arg-precomps))
           arg-code (apply concatv (map second arg-precomps))]
       [(concatv fun-fdefs
-               arg-fdefs)
+                arg-fdefs)
        (concatv arg-code
-               fun-code
-               [[:APPLY]
-                [:SWAP]
-                [:POP]])])))
+                fun-code
+                [[:APPLY]])])))
 
 (defn label-mapping
   ([[inst & insts] i mp]
@@ -209,8 +209,7 @@
       :DEFINE [(inc cp)
                (conj vs
                      (environment [param] ; = variable name
-                                  [v])
-                     v)] ; put value on stack - useful
+                                  [v]))]
       :PLUS [(inc cp)
              (conj vss (+ v1 v2))]
       :EQUALS [(inc cp)
@@ -225,8 +224,8 @@
               vstack]
       :GOTO [(label-lookup param)
              vstack]
-      :RETURN [(v3 :i)
-               (conj vsss v1)] ; <- drop v2 (environment) and v3 (return addr.)
+      :RETURN [(v2 :i)
+               (conj vss v1)] ; <- drop v2 (environment) and v3 (return addr.)
       :MAKE-LAMBDA [(inc cp)
                     (conj vstack
                           (function (second ins) ; = location of func code
@@ -259,9 +258,8 @@
 (defn eval-exp-list
   ; This function is what the REPL in core/repl hooks to
   ; NOTE: chaining of environments together over many calls to
-  ;       eval-exp-list works with simple values but not functions;
-  ;       calling a function defined outside current eval-exp-list call
-  ;       will break things. Write your REPL programs as a single line.
+  ;       eval-exp-list works is not done. Each line is a
+  ;       separate program in the REPL.
   [exps env]
   (let [master-exp (concat '(do) exps)
         [instructions label-map] (compile master-exp)]
@@ -270,6 +268,4 @@
     (driver instructions
             0
             label-map
-            (if (map? env) ; for compatibility with the repl function in core.clj
-              (list (environment (keys env) (vals env)))
-              env))))
+            '()))) ; -> don't care about env that's passed in!!
